@@ -1,0 +1,140 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+// Legacy Linear Record Subsystem
+// Fixed implementation
+
+int* dataArray = NULL;
+int currentCount = 0;
+int maxCapacity = 5;
+
+void add_item(int val) {
+    if (currentCount == 0) {
+        dataArray = new int[maxCapacity];
+    }
+
+    if (currentCount >= maxCapacity) {
+        // Double capacity
+        int* temp = new int[maxCapacity * 2];
+
+        for (int i = 0; i < maxCapacity; i++) {
+            temp[i] = dataArray[i];
+        }
+
+        // Free old memory before replacing the pointer
+        delete[] dataArray;
+
+        dataArray = temp;
+        maxCapacity = maxCapacity * 2;
+    }
+
+    dataArray[currentCount] = val;
+    currentCount++;
+
+    cout << "Added item: " << val << endl;
+}
+
+void remove_item_at(int idx) {
+
+    // Check both lower and upper bounds
+    if (idx < 0 || idx >= currentCount) {
+        cout << "Invalid index!" << endl;
+        return;
+    }
+
+    // Shift elements to the left
+    for (int i = idx; i < currentCount - 1; i++) {
+        dataArray[i] = dataArray[i + 1];
+    }
+
+    currentCount--;
+
+    cout << "Item removed from index " << idx << endl;
+}
+
+int findItem(int target) {
+
+    // Linear search
+    for (int i = 0; i < currentCount; i++) {
+        if (dataArray[i] == target) {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+void printAll() {
+
+    cout << "Current List Contents: ";
+
+    // Use < instead of <= to prevent out-of-bounds access
+    for (int i = 0; i < currentCount; i++) {
+        cout << dataArray[i] << " ";
+    }
+
+    cout << endl;
+}
+
+void processMatrix() {
+
+    int r = 3, c = 3;
+
+    int m[3][3] = {
+        {1, 2, 3},
+        {4, 5, 6},
+        {7, 8, 9}
+    };
+
+    int t[3][3];
+
+    // Transpose matrix
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            t[j][i] = m[i][j];
+        }
+    }
+
+    cout << "Transposed Matrix:" << endl;
+
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            cout << t[i][j] << " ";
+        }
+        cout << endl;
+    }
+}
+
+int main() {
+
+    cout << "--- STARTING FIXED SUBSYSTEM ---" << endl;
+
+    add_item(10);
+    add_item(20);
+    add_item(30);
+    add_item(40);
+    add_item(50);
+    add_item(60); // Triggers dynamic resize
+
+    printAll();
+
+    cout << "Found 30 at index: " << findItem(30) << endl;
+
+    remove_item_at(2);
+
+    printAll();
+
+    // Out-of-bounds test
+    remove_item_at(99);
+
+    printAll();
+
+    processMatrix();
+
+    // Free dynamically allocated memory
+    delete[] dataArray;
+    dataArray = NULL;
+
+    return 0;
+}
